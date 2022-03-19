@@ -3,7 +3,6 @@ import datetime
 import json
 import os.path
 from pathlib import Path
-from urllib.parse import urlparse
 
 import requests
 from dotenv import load_dotenv
@@ -11,7 +10,6 @@ from requests.exceptions import HTTPError
 
 
 def determine_image_type(image_link):
-    parsed_link = urlparse(image_link)
     image_type = os.path.splitext(image_link)
     image_name = os.path.basename(image_type[0])
     return image_name, image_type[1]
