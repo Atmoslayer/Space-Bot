@@ -3,6 +3,7 @@ import datetime
 import json
 import os.path
 from pathlib import Path
+import telegram
 
 import requests
 from dotenv import load_dotenv
@@ -82,14 +83,22 @@ if __name__ == '__main__':
     arguments = parser.parse_args()
     path =arguments.path
     load_dotenv()
-    token = os.getenv('NASA_TOKEN')
+    nasa_token = os.getenv('NASA_TOKEN')
+    bot_token = os.getenv('TELEGRAM_TOKEN')
     filename = 'hubble.jpeg'
     url = 'https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg'
 
+
+    gravity_guy_bot = telegram.Bot(token=bot_token)
+    gravity_guy_bot.send_message(chat_id=-1001179584983, text='Привет! Я буду размещать здесь фотографии космоса каждый день!')
+    print(gravity_guy_bot.get_me())
+
+
+
     try:
         fetch_spacex_last_launch(path)
-        fetch_nasa_picture(path, token)
-        fetch_nasa_epic_picture(path, token)
+        fetch_nasa_picture(path, nasa_token)
+        fetch_nasa_epic_picture(path, nasa_token)
         save_image(url, filename, path)
     except HTTPError as http_error:
         print(f'HTTP error occurred: {http_error}')
