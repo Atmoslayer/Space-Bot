@@ -1,7 +1,7 @@
 import argparse
 import datetime
 import os.path
-import random
+import time
 from pathlib import Path
 
 import requests
@@ -78,12 +78,13 @@ def fetch_nasa_epic_picture(path, token):
         save_image(image_link, f'nasaEPIC{image_index}.png', path)
 
 
-def sending_pictures(path, bot_token, chat_id):
+def sending_pictures(path, bot_token, chat_id, sleep_time):
 
-    gravity_guy_bot = telegram.Bot(token=bot_token)
-    picture = random.choice(os.listdir(path))
-    gravity_guy_bot.send_photo(chat_id=chat_id, photo=open(f'{path}/{picture}', 'rb')) 
-
+        gravity_guy_bot = telegram.Bot(token=bot_token)
+        for roots, dir, files in os.walk(path):
+            for picture in files:
+                gravity_guy_bot.send_photo(chat_id=chat_id, photo=open(f'{path}/{picture}', 'rb'))
+                time.sleep(sleep_time)
 
 if __name__ == '__main__':
 
@@ -96,12 +97,14 @@ if __name__ == '__main__':
     nasa_token = os.getenv('NASA_TOKEN')
     bot_token = os.getenv('TELEGRAM_TOKEN')
     chat_id = os.getenv('CHAT_ID')
+    sleep_time = int(os.getenv('SLEEP_TIME'))
 
     try:
-        fetch_spacex_last_launch(path)
-        fetch_nasa_picture(path, nasa_token)
-        fetch_nasa_epic_picture(path, nasa_token)
+        # fetch_spacex_last_launch(path)
+        # fetch_nasa_picture(path, nasa_token)
+        # fetch_nasa_epic_picture(path, nasa_token)
+        print(123)
     except HTTPError as http_error:
         print(f'HTTP error occurred: {http_error}')
 
-    sending_pictures(path, bot_token, chat_id)
+    sending_pictures(path, bot_token, chat_id, sleep_time)
