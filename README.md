@@ -21,7 +21,7 @@ Python3 должен быть уже установлен.
 ```
 pip install -r requirements.txt
 ```
-###Пример запуска
+### Пример запуска
 ```
 >>>C:/Users/atmoslayer/images
 ```
