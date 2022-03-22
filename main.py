@@ -37,10 +37,11 @@ def fetch_spacex_last_launch(path):
             image_links = flight_links['flickr_images']
             break
 
-    for image_link in image_links:
-        image_type = determine_image_type(image_link)
-        image_index = image_links.index(image_link)
-        save_image(image_link, f'spacex{image_index}{image_type}', path)
+    if image_links:
+        for image_link in image_links:
+            image_type = determine_image_type(image_link)
+            image_index = image_links.index(image_link)
+            save_image(image_link, f'spacex{image_index}{image_type}', path)
 
 
 def fetch_nasa_picture(path, token):
