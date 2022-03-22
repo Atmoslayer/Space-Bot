@@ -29,9 +29,9 @@ def fetch_spacex_last_launch(path):
     spasex_url = 'https://api.spacexdata.com/v3/launches/'
     response = requests.get(spasex_url)
     response.raise_for_status()
-    content_list = list(response.json())
-    for flights_quantity in range(len(content_list)):
-        latest_flight = content_list[-flights_quantity]
+    content = list(response.json())
+    for flights_quantity in range(len(content)):
+        latest_flight = content[-flights_quantity]
         flight_links = latest_flight['links']
         if flight_links['flickr_images']:
             image_links = flight_links['flickr_images']
@@ -49,13 +49,13 @@ def fetch_nasa_picture(path, token):
     nasa_url = f'https://api.nasa.gov/planetary/apod?count={number_of_images}&api_key={token}'
     response = requests.get(nasa_url)
     response.raise_for_status()
-    data_list = list(response.json())
+    content = list(response.json())
 
-    for data in data_list:
-        data_dict = dict(data)
-        image_link = data_dict['url']
+    for image_info in content:
+        image_info = dict(image_info)
+        image_link = image_info['url']
         image_type = determine_image_type(image_link)
-        image_index = data_list.index(data)
+        image_index = content.index(image_info)
         save_image(image_link, f'nasa{image_index}{image_type}', path)
 
 
@@ -65,16 +65,16 @@ def fetch_nasa_epic_picture(path, token):
     nasa_url = f'https://api.nasa.gov/EPIC/api/natural/images?count={number_of_images}&api_key={token}'
     response = requests.get(nasa_url)
     response.raise_for_status()
-    data_list = list(response.json())
+    content = list(response.json())
 
-    for data in data_list:
-        data_dict = dict(data)
-        image_name = data_dict['image']
-        image_full_date = data_dict['date']
+    for data in content:
+        image_info = dict(data)
+        image_name = image_info['image']
+        image_full_date = image_info['date']
         image_full_date_decoded = datetime.datetime.fromisoformat(image_full_date)
         image_date = str(image_full_date_decoded.strftime('%Y/%m/%d'))
         image_link = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}.png?api_key={token}'
-        image_index = data_list.index(data)
+        image_index = content.index(data)
         save_image(image_link, f'nasaEPIC{image_index}.png', path)
 
 
