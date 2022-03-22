@@ -30,8 +30,8 @@ def fetch_spacex_last_launch(path):
     response = requests.get(spasex_url)
     response.raise_for_status()
     content = list(response.json())
-    for flights_quantity in range(len(content)):
-        latest_flight = content[-flights_quantity]
+    for flight in content:
+        latest_flight = content[-content.index(flight)]
         flight_links = latest_flight['links']
         if flight_links['flickr_images']:
             image_links = flight_links['flickr_images']
@@ -100,10 +100,9 @@ if __name__ == '__main__':
     sleep_time = int(os.getenv('SLEEP_TIME'))
 
     try:
-        # fetch_spacex_last_launch(path)
-        # fetch_nasa_picture(path, nasa_token)
-        # fetch_nasa_epic_picture(path, nasa_token)
-        print(123)
+        fetch_spacex_last_launch(path)
+        fetch_nasa_picture(path, nasa_token)
+        fetch_nasa_epic_picture(path, nasa_token)
     except HTTPError as http_error:
         print(f'HTTP error occurred: {http_error}')
 
