@@ -2,6 +2,7 @@ import argparse
 import datetime
 import os.path
 import time
+import urllib.parse
 from pathlib import Path
 
 import requests
@@ -47,8 +48,9 @@ def fetch_spacex_last_launch(path):
 def fetch_nasa_picture(path, token):
 
     number_of_images = 30
-    nasa_url = f'https://api.nasa.gov/planetary/apod?count={number_of_images}&api_key={token}'
-    response = requests.get(nasa_url)
+    nasa_url = 'https://api.nasa.gov/planetary/apod'
+    params ={'count': number_of_images, 'api_key': token}
+    response = requests.get(nasa_url, params=params)
     response.raise_for_status()
     content = list(response.json())
 
@@ -63,19 +65,20 @@ def fetch_nasa_picture(path, token):
 def fetch_nasa_epic_picture(path, token):
 
     number_of_images = 10
-    nasa_url = f'https://api.nasa.gov/EPIC/api/natural/images?count={number_of_images}&api_key={token}'
-    response = requests.get(nasa_url)
+    nasa_url = 'https://api.nasa.gov/EPIC/api/natural/images'
+    params = {'api_key': token}
+    response = requests.get(nasa_url, params=params)
     response.raise_for_status()
     content = list(response.json())
-
-    for data in content:
-        image_info = dict(data)
+    for image_number in range(number_of_images):
+        image_info = dict(content[image_number])
         image_name = image_info['image']
         image_full_date = image_info['date']
         image_full_date_decoded = datetime.datetime.fromisoformat(image_full_date)
         image_date = str(image_full_date_decoded.strftime('%Y/%m/%d'))
-        image_link = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}.png?api_key={token}'
-        image_index = content.index(data)
+        params_decoded = urllib.parse.urlencode(params)
+        image_link = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}.png?{params_decoded}'
+        image_index = image_number
         save_image(image_link, f'nasaEPIC{image_index}.png', path)
 
 
@@ -86,6 +89,7 @@ def sending_pictures(path, bot_token, chat_id, sleep_time):
             for picture in files:
                 gravity_guy_bot.send_photo(chat_id=chat_id, photo=open(f'{path}/{picture}', 'rb'))
                 time.sleep(sleep_time)
+
 
 if __name__ == '__main__':
 
