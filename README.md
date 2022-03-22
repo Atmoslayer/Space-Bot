@@ -22,8 +22,9 @@ Python3 должен быть уже установлен.
 pip install -r requirements.txt
 ```
 ### Пример запуска
+При запуске необходимо указать путь для сохранения картинок:
 ```
->>>C:/Users/atmoslayer/images
+>>>python3 main.py C:/Users/atmoslayer/images
 ```
 ### Цель проекта
 Код написан в образовательных целях на онлайн-курсе для веб-разработчиков [dvmn.org](https://dvmn.org/).
