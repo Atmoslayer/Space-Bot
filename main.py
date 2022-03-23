@@ -75,7 +75,7 @@ def fetch_nasa_epic_picture(path, token):
         image_name = image_info['image']
         image_full_date = image_info['date']
         image_full_date_decoded = datetime.datetime.fromisoformat(image_full_date)
-        image_date = str(image_full_date_decoded.strftime('%Y/%m/%d'))
+        image_date = image_full_date_decoded.strftime('%Y/%m/%d')
         params_decoded = urllib.parse.urlencode(params)
         image_link = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}.png?{params_decoded}'
         image_index = image_number
