@@ -82,7 +82,7 @@ def fetch_nasa_epic_picture(path, token):
         save_image(image_link, f'nasaEPIC{image_index}.png', path)
 
 
-def sending_pictures(path, bot_token, chat_id, sleep_time):
+def send_pictures(path, bot_token, chat_id, sleep_time):
 
         gravity_guy_bot = telegram.Bot(token=bot_token)
         for roots, dir, files in os.walk(path):
@@ -111,4 +111,4 @@ if __name__ == '__main__':
     except HTTPError as http_error:
         print(f'HTTP error occurred: {http_error}')
 
-    sending_pictures(path, bot_token, chat_id, sleep_time)
+    send_pictures(path, bot_token, chat_id, sleep_time)
