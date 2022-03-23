@@ -87,8 +87,9 @@ def send_pictures(path, bot_token, chat_id, sleep_time):
         gravity_guy_bot = telegram.Bot(token=bot_token)
         for roots, dir, files in os.walk(path):
             for picture in files:
-                gravity_guy_bot.send_photo(chat_id=chat_id, photo=open(f'{path}/{picture}', 'rb'))
-                time.sleep(sleep_time)
+                with open(f'{path}/{picture}', 'rb') as photo:
+                    gravity_guy_bot.send_photo(chat_id=chat_id, photo=photo)
+                    time.sleep(sleep_time)
 
 
 if __name__ == '__main__':
