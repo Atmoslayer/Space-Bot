@@ -88,7 +88,7 @@ def send_pictures(path, bot_token, chat_id, sleep_time):
             for picture in files:
                 with open(f'{path}/{picture}', 'rb') as photo:
                     gravity_guy_bot.send_photo(chat_id=chat_id, photo=photo)
-                    time.sleep(sleep_time)
+                time.sleep(sleep_time)
 
 
 if __name__ == '__main__':
