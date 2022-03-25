@@ -20,7 +20,6 @@ def save_image(url, filename, path):
 
     response = requests.get(url)
     response.raise_for_status()
-    Path(path).mkdir(parents=True, exist_ok=True)
 
     with open(f'images/{filename}', 'ab') as picture:
         picture.write(response.content)
@@ -98,6 +97,7 @@ if __name__ == '__main__':
     parser.add_argument('path', help='Enter path to save images', type=str)
     arguments = parser.parse_args()
     path = arguments.path
+    Path(path).mkdir(parents=True, exist_ok=True)
     load_dotenv()
 
     nasa_token = os.getenv('NASA_TOKEN')
