@@ -29,7 +29,7 @@ def fetch_spacex_last_launch(path):
     spasex_url = 'https://api.spacexdata.com/v3/launches/'
     response = requests.get(spasex_url)
     response.raise_for_status()
-    content = list(response.json())
+    content = response.json()
     for flight in content:
         latest_flight = content[-content.index(flight)]
         flight_links = latest_flight['links']
@@ -51,10 +51,10 @@ def fetch_nasa_picture(path, token):
     params ={'count': number_of_images, 'api_key': token}
     response = requests.get(nasa_url, params=params)
     response.raise_for_status()
-    content = list(response.json())
+    content = response.json()
 
     for image_info in content:
-        image_info = dict(image_info)
+        image_info = image_info
         image_link = image_info['url']
         image_type = determine_image_type(image_link)
         image_index = content.index(image_info)
@@ -68,9 +68,9 @@ def fetch_nasa_epic_picture(path, token):
     params = {'api_key': token}
     response = requests.get(nasa_url, params=params)
     response.raise_for_status()
-    content = list(response.json())
+    content = response.json()
     for image_number in range(number_of_images):
-        image_info = dict(content[image_number])
+        image_info = content[image_number]
         image_name = image_info['image']
         image_full_date = image_info['date']
         image_full_date_decoded = datetime.datetime.fromisoformat(image_full_date)
