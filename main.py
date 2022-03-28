@@ -16,35 +16,38 @@ def determine_image_type(image_link):
     return image_type[1]
 
 
-def save_image(url, filename, path):
+def save_image(url, filename):
 
-    response = requests.get(url)
+    response = requests.get(url, params=None)
     response.raise_for_status()
 
     with open(f'images/{filename}', 'ab') as picture:
         picture.write(response.content)
 
 
-def fetch_spacex_last_launch(path):
+def fetch_spacex_last_launch():
     spasex_url = 'https://api.spacexdata.com/v3/launches/'
     response = requests.get(spasex_url)
     response.raise_for_status()
     content = response.json()
+    image_links = None
     for flight in content:
         latest_flight = content[-content.index(flight)]
         flight_links = latest_flight['links']
         if flight_links['flickr_images']:
             image_links = flight_links['flickr_images']
+            image_links = flight_links.get("flickr_images", None)
             break
 
-    if image_links:
-        for image_link in image_links:
-            image_type = determine_image_type(image_link)
-            image_index = image_links.index(image_link)
-            save_image(image_link, f'spacex{image_index}{image_type}', path)
+    if image_links is not None:
+            for image_link in image_links:
+                image_type = determine_image_type(image_link)
+                image_index = image_links.index(image_link)
+                save_image(image_link, f'spacex{image_index}{image_type}')
 
 
-def fetch_nasa_picture(path, token):
+
+def fetch_nasa_picture(token):
 
     number_of_images = 30
     nasa_url = 'https://api.nasa.gov/planetary/apod'
@@ -58,10 +61,10 @@ def fetch_nasa_picture(path, token):
         image_link = image_info['url']
         image_type = determine_image_type(image_link)
         image_index = content.index(image_info)
-        save_image(image_link, f'nasa{image_index}{image_type}', path)
+        save_image(image_link, f'nasa{image_index}{image_type}')
 
 
-def fetch_nasa_epic_picture(path, token):
+def fetch_nasa_epic_picture(token):
 
     number_of_images = 10
     nasa_url = 'https://api.nasa.gov/EPIC/api/natural/images'
@@ -78,7 +81,7 @@ def fetch_nasa_epic_picture(path, token):
         params_decoded = urllib.parse.urlencode(params)
         image_link = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}.png?{params_decoded}'
         image_index = image_number
-        save_image(image_link, f'nasaEPIC{image_index}.png', path)
+        save_image(image_link, f'nasaEPIC{image_index}.png')
 
 
 def send_pictures(path, bot_token, chat_id, sleep_time):
@@ -106,9 +109,9 @@ if __name__ == '__main__':
     sleep_time = int(os.getenv('SLEEP_TIME'))
 
     try:
-        fetch_spacex_last_launch(path)
-        fetch_nasa_picture(path, nasa_token)
-        fetch_nasa_epic_picture(path, nasa_token)
+        fetch_spacex_last_launch()
+        fetch_nasa_picture(nasa_token)
+        fetch_nasa_epic_picture(nasa_token)
     except HTTPError as http_error:
         print(f'HTTP error occurred: {http_error}')
 
