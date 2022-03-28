@@ -2,7 +2,6 @@ import argparse
 import datetime
 import os.path
 import time
-import urllib.parse
 from pathlib import Path
 
 import requests
@@ -16,9 +15,9 @@ def determine_image_type(image_link):
     return image_type[1]
 
 
-def save_image(url, filename):
+def save_image(url, filename, params):
 
-    response = requests.get(url, params=None)
+    response = requests.get(url, params=params)
     response.raise_for_status()
 
     with open(f'images/{filename}', 'ab') as picture:
@@ -35,7 +34,6 @@ def fetch_spacex_last_launch():
         latest_flight = content[-content.index(flight)]
         flight_links = latest_flight['links']
         if flight_links['flickr_images']:
-            image_links = flight_links['flickr_images']
             image_links = flight_links.get("flickr_images", None)
             break
 
@@ -43,7 +41,7 @@ def fetch_spacex_last_launch():
             for image_link in image_links:
                 image_type = determine_image_type(image_link)
                 image_index = image_links.index(image_link)
-                save_image(image_link, f'spacex{image_index}{image_type}')
+                save_image(image_link, f'spacex{image_index}{image_type}', None)
 
 
 
@@ -61,7 +59,7 @@ def fetch_nasa_picture(token):
         image_link = image_info['url']
         image_type = determine_image_type(image_link)
         image_index = content.index(image_info)
-        save_image(image_link, f'nasa{image_index}{image_type}')
+        save_image(image_link, f'nasa{image_index}{image_type}', None)
 
 
 def fetch_nasa_epic_picture(token):
@@ -78,10 +76,9 @@ def fetch_nasa_epic_picture(token):
         image_full_date = image_info['date']
         image_full_date_decoded = datetime.datetime.fromisoformat(image_full_date)
         image_date = image_full_date_decoded.strftime('%Y/%m/%d')
-        params_decoded = urllib.parse.urlencode(params)
-        image_link = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}.png?{params_decoded}'
+        image_link = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}.png'
         image_index = image_number
-        save_image(image_link, f'nasaEPIC{image_index}.png')
+        save_image(image_link, f'nasaEPIC{image_index}.png', params)
 
 
 def send_pictures(path, bot_token, chat_id, sleep_time):
