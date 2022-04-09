@@ -15,7 +15,7 @@ def determine_image_type(image_link):
     return image_type[1]
 
 
-def save_image(url, filename, params):
+def save_image(url, filename, params=None):
 
     response = requests.get(url, params=params)
     response.raise_for_status()
@@ -30,19 +30,17 @@ def fetch_spacex_last_launch():
     response.raise_for_status()
     content = response.json()
     image_links = None
-    for flight in content:
-        latest_flight = content[-content.index(flight)]
-        flight_links = latest_flight['links']
+    for flight in reversed(content):
+        flight_links = flight['links']
         if flight_links['flickr_images']:
             image_links = flight_links.get("flickr_images", None)
             break
 
-    if image_links is not None:
-            for image_link in image_links:
-                image_type = determine_image_type(image_link)
-                image_index = image_links.index(image_link)
-                save_image(image_link, f'spacex{image_index}{image_type}', None)
-
+    if image_links:
+        for image_link in image_links:
+            image_type = determine_image_type(image_link)
+            image_index = image_links.index(image_link)
+            save_image(image_link, f'spacex{image_index}{image_type}')
 
 
 def fetch_nasa_picture(token):
@@ -59,7 +57,7 @@ def fetch_nasa_picture(token):
         image_link = image_info['url']
         image_type = determine_image_type(image_link)
         image_index = content.index(image_info)
-        save_image(image_link, f'nasa{image_index}{image_type}', None)
+        save_image(image_link, f'nasa{image_index}{image_type}')
 
 
 def fetch_nasa_epic_picture(token):
@@ -83,12 +81,13 @@ def fetch_nasa_epic_picture(token):
 
 def send_pictures(path, bot_token, chat_id, sleep_time):
 
-        gravity_guy_bot = telegram.Bot(token=bot_token)
-        for roots, dir, files in os.walk(path):
-            for picture in files:
-                with open(f'{path}/{picture}', 'rb') as photo:
-                    gravity_guy_bot.send_photo(chat_id=chat_id, photo=photo)
-                time.sleep(sleep_time)
+    gravity_guy_bot = telegram.Bot(token=bot_token)
+    for roots, dir, files in os.walk(path):
+        for picture in files:
+            with open(f'{path}/{picture}', 'rb') as photo:
+                gravity_guy_bot.send_photo(chat_id=chat_id, photo=photo)
+            time.sleep(sleep_time)
+    gravity_guy_bot.send_photo(chat_id=chat_id, photo=photo)
 
 
 if __name__ == '__main__':
@@ -109,6 +108,7 @@ if __name__ == '__main__':
         fetch_spacex_last_launch()
         fetch_nasa_picture(nasa_token)
         fetch_nasa_epic_picture(nasa_token)
+        # print(123)
     except HTTPError as http_error:
         print(f'HTTP error occurred: {http_error}')
 
